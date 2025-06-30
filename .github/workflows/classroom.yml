@@ -124,13 +124,13 @@ jobs:
           --env INPUT_GITHUB_REPOSITORY="${{ github.repository }}" \
           --env INPUT_EXPLANATION-IN="English" \
           ${{ env.image_url }} \
-          python3 ai_tutor/entrypoint.py > ./feedback.md
+          python3 ai_tutor/entrypoint.py > ${{ env.WORKSPACE_OUTPUT }}/feedback.md
       timeout-minutes: 10
 
     - name: forward feedback to summary
       if: always()
       run: |
-        cat ./feedback.md >> $GITHUB_STEP_SUMMARY
+        cat ${{ env.WORKSPACE_OUTPUT }}/feedback.md >> $GITHUB_STEP_SUMMARY
 
     - name: upload artifacts
       id: artifacts
@@ -139,8 +139,8 @@ jobs:
       with:
         name: artifacts-${{ env.SHORT_SHA }}
         path: |
-          ./*.png
-          ./*.json
-          ./feedback.md
+          ${{ env.WORKSPACE_OUTPUT }}/*.png
+          ${{ env.WORKSPACE_OUTPUT }}/*.json
+          ${{ env.WORKSPACE_OUTPUT }}/feedback.md
         retention-days: 21
         overwrite: true
